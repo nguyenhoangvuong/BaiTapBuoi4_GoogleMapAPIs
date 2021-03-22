@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Google Map API Demo</title>
+    <style type="text/css">
+        #map {
+            height: 100%;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #floating-panel {
+            position: absolute;
+            top: 10px;
+            left: 25%;
+            z-index: 5;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #999;
+            text-align: center;
+            font-family: "Roboto", "sans-serif";
+            line-height: 30px;
+            padding-left: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="floating-panel">
+        <b>Phương tiện: </b>
+        <select id="mode">
+            <option value="DRIVING">Driving</option>
+            <option value="WALKING">Walking</option>
+            <option value="BICYCLING">Bicycling</option>
+            <option value="TRANSIT">Transit</option>
+        </select>
+    </div>
+    <div id="map"></div>
+    <script>
+        function initMap() {
+            var diachinha = { lat: 10.854644474298569, lng: 106.80913921389491 };
+            var diachitruong = { lat: 10.845766, lng: 106.794630 };
+            const directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: true });
+            const directionsService = new google.maps.DirectionsService();
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 14,
+                center: diachitruong,
+            });
+            const markertruong = new google.maps.Marker({
+                position: diachitruong,
+                map: map,
+                animation: google.maps.Animation.DROP,
+                icon:{
+                    url:"utc2.png",
+                    scaledSize: { width: 40, height: 40 }
+                }
+                    
+            });
+            const markernha = new google.maps.Marker({
+                position: diachinha,
+                map: map,
+                animation: google.maps.Animation.DROP,
+                icon:{
+                    url:"1.jpg",
+                    scaledSize: { width: 40, height: 40 }
+                }
+            });
+            markertruong.addListener("click", () => {
+                var infowindow = new google.maps.InfoWindow({
+                    content: "PHÂN HIỆU TRƯỜNG ĐH GTVT TẠI TP. HỒ CHÍ MINH<br>Địa chỉ: 450-451 Lê Văn Việt, Phường Tăng Nhơn Phú A, Tp. Thủ Đức (Quận 9 cũ), TP. Hồ Chí Minh<br>Điện thoại: (028).3896.6798 - (028).7300.1155<br>Email: banbientap@utc2.edu.vn<br>Fax: (028).3896.4736 - Website: http://utc2.edu.vn"
+                });
+
+                infowindow.open(map, markertruong);
+            });
+            markernha.addListener("click", () => {
+                var infowindow = new google.maps.InfoWindow({
+                    content: "Họ Tên : Nguyễn Hoàng Vương <br>MSSV : 5951071124 <br>Quê quán: Quảng Ngãi <br>Gmail: hoangvuong1225@gmail.com"
+                });
+
+                infowindow.open(map, markernha);
+
+            });
+            directionsRenderer.setMap(map);
+            calculateAndDisplayRoute(directionsService, directionsRenderer);
+            document.getElementById("mode").addEventListener("change", () => {
+                calculateAndDisplayRoute(directionsService, directionsRenderer);
+            });
+        }
+
+        function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+            const selectedMode = document.getElementById("mode").value;
+            directionsService.route(
+                {
+                    destination: "PHÂN HIỆU TRƯỜNG ĐH GTVT TẠI TP. HỒ CHÍ MINH, 451 Lê Văn Việt, Tăng Nhơn Phú A, thành phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam",
+                    origin: "71 Cầu Xây, Phường Tân Phú, Quận 9, Thành phố Hồ Chí Minh, Việt Nam",
+                    travelMode: google.maps.TravelMode[selectedMode],
+                },
+                (response, status) => {
+                    if (status == "OK") {
+                        directionsRenderer.setDirections(response);
+                    } else {
+                        window.alert("Yêu cầu chỉ đường không thành công do " + status);
+                    }
+                }
+            );
+        }
+
+    </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNI_ZWPqvdS6r6gPVO50I4TlYkfkZdXh8&callback=initMap&libraries=&v=weekly"
+        async></script>
+</body>
+
+</html>
